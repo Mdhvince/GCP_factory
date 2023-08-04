@@ -1,4 +1,5 @@
 import argparse
+import json
 import logging
 import os
 
@@ -28,6 +29,14 @@ class Trainer:
 
         self.train_data = datasets.ImageFolder(self.train_dir, transform=self.transform)
         self.classes = self.train_data.classes
+
+        # Save the mapping from class index to class name
+        c2i = self.train_data.class_to_idx.items()
+        i2c = {i: c for c, i in c2i}
+
+        i2c_path = os.path.join(os.path.dirname(self.train_dir), "index_to_name.json")
+        with open(i2c_path, "w") as f:
+            json.dump(i2c, f)
 
         self._load_pretrained_model()
         self.criterion = nn.CrossEntropyLoss()
