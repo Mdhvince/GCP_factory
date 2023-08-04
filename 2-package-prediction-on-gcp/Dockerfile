@@ -28,7 +28,7 @@ RUN torch-model-archiver \
     --handler=/model-server/model_handler_online_prediction.py \
     --export-path=/model-server/model-store \
 
-# Run torchserve http server to respond to inference requests
+# Run torchserve http server. This wrap Pytorch model into a REST API
 CMD ["torchserve", \
      "--start", \
      "--model-store", "/model-server/model-store", \
