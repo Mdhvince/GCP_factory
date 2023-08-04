@@ -6,18 +6,22 @@ import numpy as np
 import torch
 import torchvision.transforms as T
 from torch import nn, optim
+from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import SubsetRandomSampler
 from torchvision import datasets, models
 from torchvision.models import ResNet18_Weights
 
 torch.manual_seed(17)
 
-
+# TODO: Add support for tensorboard in the notebbok
+#  and https://github.com/GoogleCloudPlatform/vertex-ai-samples/blob/main/community-content/pytorch_image_classification_single_gpu_with_vertex_sdk_and_torchserve/vertex_training_with_custom_container.ipynb
 class Trainer:
-    def __init__(self, train_dir, model_path, valid_ratio, batch_size, n_epochs, lr=0.001, momentum=0.9):
+    def __init__(self, train_dir, model_path, writer, valid_ratio, batch_size, n_epochs, lr=0.001, momentum=0.9):
+        # TODO: Add logging to the trainer (replace print)
         self.model = None
         self.train_dir = train_dir
         self.model_path = model_path
+        self.writer = writer
         self.valid_ratio = valid_ratio
         self.batch_size = batch_size
         self.n_epochs = n_epochs
@@ -66,6 +70,9 @@ class Trainer:
             train_loss = train_loss / len(train_loader)
             valid_loss = valid_loss / len(valid_loader)
             print(f"Epoch: {epoch} \tTraining Loss: {train_loss} \tValidation Loss: {valid_loss}")
+
+            self.writer.add_scalar('Avg.Loss/train', train_loss, epoch)
+            self.writer.add_scalar('Avg.Loss/validation', valid_loss, epoch)
 
             if valid_loss <= valid_loss_min:
                 print(f"Validation loss decreased ({valid_loss_min} --> {valid_loss}).  Saving model ...")
@@ -131,6 +138,11 @@ def parser_fn():
         type=str,
         help="Path to the log file. On GCP, use /gcs/bucket/log/my_log.log"
     )
+    parser.add_argument(
+        "--tensorboard_log_dir",
+        type=str,
+        help="Path to the tensorboard log directory. On GCP, use /gcs/bucket/tensorboard_log"
+    )
     parser.add_argument("--valid_ratio", type=float, help="Ratio of the validation set", default=0.25)
     parser.add_argument("--batch_size", type=int, help="Batch size", default=4)
     parser.add_argument("--n_epochs", type=int, help="Number of epochs", default=1)
@@ -143,6 +155,7 @@ def parser_fn():
 
 if __name__ == "__main__":
     args = parser_fn()
+    writer = SummaryWriter(args.tensorboard_log_dir)
 
     logging.basicConfig(filename=args.log_path, level=logging.INFO)
     logging.info("Running pytorch version: {}".format(torch.__version__))
@@ -151,11 +164,12 @@ if __name__ == "__main__":
     trainer = Trainer(
         args.train_dir,
         args.model_path,
+        writer,
         args.valid_ratio,
         args.batch_size,
         args.n_epochs,
         args.lr,
-        args.momentum
+        args.momentum,
     )
     train_loader, valid_loader = trainer.load_data()
     trainer.train()
