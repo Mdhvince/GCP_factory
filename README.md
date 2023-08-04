@@ -16,4 +16,9 @@ Upload the data to the bucket
 ./upload_to_bucket.sh --type folder /path/to/local/folder my-bucket-name
 ```
 
+Setup the container
+```bash
+./setup_container_training_service.sh <your-project-id> <repo-name> <your-repo-description> <your-region> <your-image-name>
+```
+Note: <repo-name> does not support underscore, use dash instead.
 
