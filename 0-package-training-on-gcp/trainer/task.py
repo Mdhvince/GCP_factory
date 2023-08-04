@@ -13,8 +13,6 @@ from torchvision.models import ResNet18_Weights
 
 torch.manual_seed(17)
 
-# TODO: Add support for tensorboard in the notebbok
-#  and https://github.com/GoogleCloudPlatform/vertex-ai-samples/blob/main/community-content/pytorch_image_classification_single_gpu_with_vertex_sdk_and_torchserve/vertex_training_with_custom_container.ipynb
 class Trainer:
     def __init__(self, train_dir, model_path, writer, valid_ratio, batch_size, n_epochs, lr=0.001, momentum=0.9):
         # TODO: Add logging to the trainer (replace print)
