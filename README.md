@@ -19,3 +19,25 @@ Setup the container
 ```
 Note: <repo-name> does not support underscore, use dash instead.
 
+
+## Vertex AI prediction with torchserve
+
+`pip install torchserve torch-model-archiver torch-workflow-archiver`
+
+- use **torchserve handler** to initialize/preprocess/inference/postprocess data. **Default handler** can be used for common use cases
+(e.g. image classification, text classification, object detection, etc.). We can also create custom handler for
+specific use cases.
+- during training, it is optional but recommended to save the model in **torchscript** format. Torchscript is a way to
+create serializable and optimized Pytorch models for inference. This can be done as follows:
+
+```python
+import torch
+
+model = ...
+# train the model and save the state dict as usual
+# at the end, convert the best model to torchscript
+
+torch_scripted_model = torch.jit.script(model)
+torch_scripted_model.save("ts_model.pt")
+```
+
