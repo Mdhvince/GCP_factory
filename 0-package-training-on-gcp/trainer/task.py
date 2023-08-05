@@ -83,7 +83,11 @@ class Trainer:
 
             if valid_loss <= valid_loss_min:
                 print(f"Validation loss decreased ({valid_loss_min} --> {valid_loss}).  Saving model ...")
+
                 torch.save(self.model.state_dict(), str(self.model_path))
+                torch_scripted_model = torch.jit.script(self.model)
+                torch_scripted_model.save(os.path.dirname(self.model_path) + "/scripted_model.pt")
+
                 valid_loss_min = valid_loss
 
     def _load_pretrained_model(self):
