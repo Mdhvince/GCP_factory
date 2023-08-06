@@ -13,9 +13,9 @@
 ./upload_to_bucket.sh --type folder /path/to/local/folder my-bucket-name
 ```
 
-**Setup the container**
+**Set up the container**
 ```bash
-./setup_container_training_service.sh <your-project-id> <repo-name> <your-repo-description> <your-region> <your-image-name>
+./setup_container_training_service.sh <project-id> <repo-name> <repo-description> <region> <training-image-name>
 ```
 Note: <repo-name> does not support underscore, use dash instead.
 
@@ -49,9 +49,20 @@ torch_scripted_model.save("ts_model.pt")
 
 `pip install torchserve torch-model-archiver torch-workflow-archiver`
 
-- Use **torchserve handler** to initialize/preprocess/inference/postprocess data.
-- Create the Dockerfile with torchserve as base image and package everything.
-- Build the image and push it to the artifact registry.
+Tree structure:
+```
+folder/
+    Dockerfile
+    model-server/
+        requirements.txt     # optional
+        config.properties    # will be created from Dockerfile
+        your-model.pt        # downloaded from bucket
+        index_to_name.json   # downloaded from bucket (example of an additional file)
+        your-handler.py      # custom handler if needed   
+```
 
-
+- **Create torchserve handler** to initialize/preprocess/inference/postprocess data.
+- **Create the Dockerfile** with torchserve as base image and package everything.
+- **Set up the prediction container** (assuming the repo already created and contains the training container) `./setup_container_prediction_service.sh <project-id> <repo-name> <region> <prediction-image-name>`
+- **Deploy the serving container to Vertex Endpoint**
 
