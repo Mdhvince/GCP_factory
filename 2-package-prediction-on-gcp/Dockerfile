@@ -26,7 +26,7 @@ RUN torch-model-archiver \
     --serialized-file=/model-server/ts_model.pt  \
     --extra-files=/model-server/index_to_name.json  \
     --handler=/model-server/model_handler_online_prediction.py \
-    --export-path=/model-server/model-store \
+    --export-path=/model-server/model-store
 
 # Run torchserve http server. This wrap Pytorch model into a REST API
 CMD ["torchserve", \
